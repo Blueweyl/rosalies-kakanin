@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rosalie's Kakanin — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Italiana&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ============================================
+     LOGIN SCREEN
+     ============================================ -->
+<div class="login-screen">
+  <div class="login-card">
+    <div class="logo">R</div>
+    <h1>Rosalie's</h1>
+    <div class="subtitle">Admin Panel</div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter admin password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
+    </form>
+    <div style="margin-top: 24px;">
+      <a href="index.html" style="font-size: 13px; color: var(--sage);">&larr; Back to website</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     ADMIN LAYOUT
+     ============================================ -->
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h2>Rosalie's</h2>
+      <span>Admin Panel</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" data-panel="dashboardPanel" class="active">
+        <span class="icon">&#9632;</span> Dashboard
+      </a>
+      <a href="#" data-panel="postsPanel">
+        <span class="icon">&#9998;</span> Posts
+      </a>
+      <a href="#" data-panel="createPanel">
+        <span class="icon">&#10010;</span> Create Post
+      </a>
+      <div class="nav-divider"></div>
+      <a href="#" data-panel="aiPanel">
+        <span class="icon">&#10024;</span> AI Agent
+      </a>
+      <a href="#" data-panel="socialPanel">
+        <span class="icon">&#127760;</span> Social Media
+      </a>
+      <div class="nav-divider"></div>
+      <a href="#" data-panel="settingsPanel">
+        <span class="icon">&#9881;</span> Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="index.html">&#8592; View Website</a>
+      <a href="#" onclick="App.logout(); return false;" style="margin-top: 8px;">&#10005; Log Out</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="admin-main">
+
+    <div class="admin-topbar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="mobile-sidebar-toggle btn btn-secondary" style="display:none; padding:8px 12px;">&#9776;</button>
+        <h1>Dashboard</h1>
+      </div>
+      <div class="topbar-actions">
+        <a href="index.html" class="btn btn-secondary" style="font-size:12px;">View Site</a>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="admin-panel active" id="dashboardPanel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Posts</div>
+          <div class="stat-value" id="statTotalPosts">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Published</div>
+          <div class="stat-value" id="statPublished">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Social Posts</div>
+          <div class="stat-value" id="statSocialPosts">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AI Generated</div>
+          <div class="stat-value" id="statAIGenerated">0</div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Quick Actions</h3>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="#" class="btn btn-primary" onclick="document.querySelector('[data-panel=createPanel]').click(); return false;">Create New Post</a>
+          <a href="#" class="btn btn-gold" onclick="document.querySelector('[data-panel=aiPanel]').click(); return false;">Open AI Agent</a>
+          <a href="#" class="btn btn-secondary" onclick="document.querySelector('[data-panel=socialPanel]').click(); return false;">Social Media Settings</a>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Recent Posts</h3>
+        <div id="dashboardRecentPosts">
+          <p style="text-align:center; color:var(--sage); padding:20px;">No posts yet. Create your first post to get started!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== POSTS LIST ===== -->
+    <div class="admin-panel" id="postsPanel">
+      <div class="panel-card">
+        <div class="card-header">
+          <h3>All Posts</h3>
+          <a href="#" class="btn btn-primary" onclick="document.querySelector('[data-panel=createPanel]').click(); return false;">New Post</a>
+        </div>
+        <div id="postsList"></div>
+      </div>
+    </div>
+
+    <!-- ===== CREATE POST ===== -->
+    <div class="admin-panel" id="createPanel">
+      <div class="panel-card">
+        <h3>Create New Post</h3>
+        <form id="createPostForm">
+          <div class="form-group">
+            <label>Post Title</label>
+            <input type="text" id="postTitle" placeholder="e.g., Fresh Bibingka Special — Available This Weekend!" required>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea id="postContent" placeholder="Write your post content here... Describe the product, create urgency, make them crave it!" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="postCategory">
+              <option value="promotion">Promotion</option>
+              <option value="new-product">New Product</option>
+              <option value="announcement">Announcement</option>
+              <option value="blog">Blog Post</option>
+              <option value="event">Event / Fiesta</option>
+            </select>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:12px; margin: 20px 0;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="postToSocial">
+              <span class="slider"></span>
+            </label>
+            <span style="font-size:14px;">Auto-post to connected social media accounts</span>
+          </div>
+
+          <div style="display:flex; gap:12px;">
+            <button type="submit" class="btn btn-primary">Publish Post</button>
+            <button type="button" class="btn btn-gold" onclick="document.querySelector('[data-panel=aiPanel]').click();">Use AI Agent to Write</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== AI MARKETING AGENT ===== -->
+    <div class="admin-panel" id="aiPanel">
+      <div class="panel-card">
+        <h3>AI Marketing Agent</h3>
+        <p style="font-size:14px; color:var(--sage); margin-bottom:20px;">
+          Your AI-powered food marketing specialist. Get mouth-watering copy, social media captions, SEO keywords, and promotional ideas — all tailored for Rosalie's Kakanin.
+        </p>
+
+        <div class="ai-quick-actions">
+          <button class="ai-quick-btn" data-prompt="Write a mouth-watering product description for our Bibingka Special">Bibingka Description</button>
+          <button class="ai-quick-btn" data-prompt="Create 3 social media captions for Facebook and Instagram">Social Media Captions</button>
+          <button class="ai-quick-btn" data-prompt="Give me SEO keywords and meta description for our website">SEO Keywords</button>
+          <button class="ai-quick-btn" data-prompt="Create TikTok video ideas and scripts for our kakanin">TikTok Ideas</button>
+          <button class="ai-quick-btn" data-prompt="Write a weekend promo post with urgency and scarcity">Promo Post</button>
+          <button class="ai-quick-btn" data-prompt="Write a fiesta bulk order announcement">Fiesta Announcement</button>
+        </div>
+
+        <div class="ai-chat" id="aiChat">
+          <div class="ai-message agent">
+            <div class="avatar">&#129302;</div>
+            <div class="bubble">
+              Kumusta! I'm Rosalie's Marketing Agent &#127811;<br><br>
+              I specialize in creating irresistible food content that makes your customers crave kakanin. I can write:<br><br>
+              &#8226; <strong>Product descriptions</strong> that make people taste the food<br>
+              &#8226; <strong>Social media captions</strong> for FB, IG & TikTok<br>
+              &#8226; <strong>SEO content</strong> to boost your search ranking<br>
+              &#8226; <strong>Promo ideas</strong> that create urgency<br>
+              &#8226; <strong>Video scripts</strong> for TikTok/Reels<br><br>
+              Try the quick buttons above, or just ask me anything!
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-input-row">
+          <input type="text" id="aiInput" placeholder="Ask me to write something... e.g., 'Write a caption for our new Ube Sapin-Sapin'">
+          <button class="btn btn-primary" id="aiSend">Send</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>AI Settings</h3>
+        <p style="font-size:13px; color:var(--sage); margin-bottom:16px;">
+          Connect your Claude API key for smarter, more creative responses. Without an API key, the agent uses built-in templates.
+        </p>
+        <div class="form-group">
+          <label>Claude API Key (Optional)</label>
+          <input type="password" id="claudeApiKey" placeholder="sk-ant-...">
+        </div>
+        <button class="btn btn-secondary" onclick="App.settings.aiApiKey = document.getElementById('claudeApiKey').value; App.saveData(); showToast('API key saved!', 'success');">Save API Key</button>
+      </div>
+    </div>
+
+    <!-- ===== SOCIAL MEDIA SETTINGS ===== -->
+    <div class="admin-panel" id="socialPanel">
+      <div class="panel-card">
+        <h3>Social Media Accounts</h3>
+        <p style="font-size:14px; color:var(--sage); margin-bottom:24px;">
+          Connect your social media accounts to automatically share posts when you publish. When you create a post and enable auto-posting, it will be shared to all connected platforms.
+        </p>
+
+        <!-- Facebook -->
+        <div class="social-account">
+          <div class="platform-icon fb">f</div>
+          <div class="platform-info">
+            <h4>Facebook Page</h4>
+            <p>Auto-post to your Facebook Page when publishing</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="fbEnabled">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="panel-card" style="margin-left:60px; padding:20px; margin-bottom:20px;">
+          <div class="form-group">
+            <label>Facebook Page URL</label>
+            <input type="text" id="fbUrl" placeholder="https://www.facebook.com/rosalieskakanin">
+          </div>
+          <div class="form-group">
+            <label>Page ID</label>
+            <input type="text" id="fbPageId" placeholder="Your Facebook Page ID">
+          </div>
+          <div class="form-group">
+            <label>Page Access Token</label>
+            <input type="password" id="fbToken" placeholder="Your page access token from Meta Developer">
+          </div>
+        </div>
+
+        <!-- Instagram -->
+        <div class="social-account">
+          <div class="platform-icon ig">&#9830;</div>
+          <div class="platform-info">
+            <h4>Instagram Business</h4>
+            <p>Auto-post to your Instagram Business account</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="igEnabled">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="panel-card" style="margin-left:60px; padding:20px; margin-bottom:20px;">
+          <div class="form-group">
+            <label>Instagram Profile URL</label>
+            <input type="text" id="igUrl" placeholder="https://www.instagram.com/rosalieskakanin">
+          </div>
+          <div class="form-group">
+            <label>Instagram Business Account ID</label>
+            <input type="text" id="igAccountId" placeholder="Your Instagram Business Account ID">
+          </div>
+          <div class="form-group">
+            <label>Access Token</label>
+            <input type="password" id="igToken" placeholder="Your access token from Meta Developer">
+          </div>
+        </div>
+
+        <!-- TikTok -->
+        <div class="social-account">
+          <div class="platform-icon tt">&#9835;</div>
+          <div class="platform-info">
+            <h4>TikTok</h4>
+            <p>Auto-post to your TikTok account</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="ttEnabled">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="panel-card" style="margin-left:60px; padding:20px; margin-bottom:20px;">
+          <div class="form-group">
+            <label>TikTok Profile URL</label>
+            <input type="text" id="ttUrl" placeholder="https://www.tiktok.com/@rosalieskakanin">
+          </div>
+          <div class="form-group">
+            <label>Open ID</label>
+            <input type="text" id="ttOpenId" placeholder="Your TikTok Open ID">
+          </div>
+          <div class="form-group">
+            <label>Access Token</label>
+            <input type="password" id="ttToken" placeholder="Your TikTok access token">
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="saveSocialSettings">Save All Settings</button>
+      </div>
+
+      <div class="panel-card">
+        <h3>How to Get API Keys</h3>
+        <div style="font-size:14px; line-height:1.8; color: var(--ink);">
+          <p><strong>Facebook & Instagram:</strong></p>
+          <ol style="margin-left:20px; margin-bottom:16px;">
+            <li>Go to <strong>developers.facebook.com</strong> and create a Meta Developer account</li>
+            <li>Create a new App (type: Business)</li>
+            <li>Add the "Pages API" and "Instagram Graph API" products</li>
+            <li>Generate a Page Access Token with <code>pages_manage_posts</code> permission</li>
+            <li>For Instagram, link your Instagram Business account to your Facebook Page</li>
+          </ol>
+          <p><strong>TikTok:</strong></p>
+          <ol style="margin-left:20px;">
+            <li>Go to <strong>developers.tiktok.com</strong> and create a Developer account</li>
+            <li>Create a new App and request the "Content Posting API" scope</li>
+            <li>After approval, generate your Access Token</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="admin-panel" id="settingsPanel">
+      <div class="panel-card">
+        <h3>Admin Settings</h3>
+        <p style="font-size:14px; color:var(--sage); margin-bottom:20px;">
+          General settings for your admin panel.
+        </p>
+        <div class="form-group">
+          <label>Admin Password</label>
+          <input type="password" id="settingsPassword" placeholder="Current password: rosalies2026" disabled>
+          <p style="font-size:12px; color:var(--sage); margin-top:6px;">
+            To change the admin password, edit the <code>ADMIN_PASSWORD</code> variable in <code>js/admin.js</code>
+          </p>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Data Management</h3>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="
+            const data = JSON.stringify({posts: App.posts, settings: App.settings}, null, 2);
+            const blob = new Blob([data], {type:'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'rosalies-backup-' + new Date().toISOString().slice(0,10) + '.json';
+            a.click();
+            showToast('Backup downloaded!', 'success');
+          ">Export Backup</button>
+          <button class="btn btn-danger" onclick="
+            if(confirm('Are you sure? This will delete all posts and settings.')) {
+              localStorage.removeItem('rosalies_admin');
+              location.reload();
+            }
+          ">Reset All Data</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>About</h3>
+        <p style="font-size:14px; color:var(--ink); line-height:1.7;">
+          <strong>Rosalie's Kakanin Admin Panel</strong><br>
+          Version 1.0<br><br>
+          Features:<br>
+          &#8226; Post creation & management<br>
+          &#8226; AI-powered marketing content generation<br>
+          &#8226; Auto-posting to Facebook, Instagram & TikTok<br>
+          &#8226; SEO optimization tools<br><br>
+          Built with love for Rosalie's Kakanin &#127811;
+        </p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
