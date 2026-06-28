@@ -524,16 +524,27 @@ section { padding: 100px 0; position: relative; }
 .menu-card:active { transform: translateY(-6px) scale(0.98); }
 
 .menu-card .swatch {
-  height: 140px;
+  height: 180px;
   position: relative;
   transition: height var(--transition-smooth);
   overflow: hidden;
 }
-.menu-card:hover .swatch { height: 150px; }
+.menu-card:hover .swatch { height: 195px; }
 .menu-card .swatch::after {
   content: "";
   position: absolute; inset: 0;
   background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.15));
+  z-index: 1;
+}
+.menu-card .swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.menu-card:hover .swatch img {
+  transform: scale(1.08);
 }
 
 .menu-card .body { padding: 22px 24px 26px; }
