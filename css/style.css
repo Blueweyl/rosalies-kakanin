@@ -279,9 +279,24 @@ nav.links a:hover::after { width: 100%; left: 0; }
   padding: 80px 28px 60px;
   text-align: center;
   overflow: hidden;
+  background: url('../images/banners/hero-banner.jpg') center center / cover no-repeat;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(243, 236, 221, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 0;
+}
+.hero > * { position: relative; z-index: 1; }
+.hero .wrap { position: relative; z-index: 1; }
 
-.leaf-corner { position: absolute; width: 230px; opacity: 0.9; }
+.leaf-corner { position: absolute; width: 230px; opacity: 0; pointer-events: none; }
 .leaf-corner.tl { top: -20px; left: -40px; transform: scaleX(1); }
 .leaf-corner.tr { top: -20px; right: -40px; transform: scaleX(-1); }
 .leaf-corner svg path, .leaf-corner svg ellipse { fill: var(--sage); opacity: 0.55; }
