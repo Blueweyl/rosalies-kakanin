@@ -510,27 +510,16 @@ section { padding: 100px 0; position: relative; }
 .about-art {
   aspect-ratio: 4/5;
   border-radius: var(--radius-lg);
-  background: linear-gradient(165deg, var(--forest) 0%, #3a5536 55%, var(--gold) 130%);
   position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
   box-shadow: var(--shadow-lg);
   transition: transform var(--transition-smooth);
 }
 .about-art:hover { transform: scale(1.02) rotate(-1deg); }
-.about-art .ring-deco {
-  width: 70%; aspect-ratio: 1; border-radius: 50%;
-  border: 1px solid rgba(243, 236, 221, 0.4);
-  display: flex; align-items: center; justify-content: center;
-  animation: float 6s ease-in-out infinite;
-}
-.about-art .ring-deco span {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  color: var(--cream);
-  font-size: 28px;
-  text-align: center;
-  line-height: 1.35;
-  padding: 0 16px;
+.about-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .about-copy h2 {
