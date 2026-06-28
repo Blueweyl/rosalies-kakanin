@@ -1554,6 +1554,41 @@ footer .word {
 .checkout-field {
   margin-bottom: 14px;
 }
+.location-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.location-btn:hover { background: var(--gold-light); transform: scale(1.02); }
+.location-btn:active { transform: scale(0.98); }
+
+.search-btn {
+  padding: 12px 20px;
+  background: var(--forest);
+  color: var(--cream);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.search-btn:hover { background: var(--forest-deep); }
+
 .checkout-field label {
   display: block;
   font-size: 12px;
