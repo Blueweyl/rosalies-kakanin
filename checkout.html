@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | Rosalie's Kakanin</title>
+<meta name="description" content="Complete your order from Rosalie's Kakanin. Delivery or pick-up in Marilao, Bulacan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Italiana&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+
+<div class="checkout-page">
+
+  <!-- Top bar -->
+  <div class="checkout-topbar">
+    <a href="index.html#menu" class="checkout-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to menu
+    </a>
+    <a href="tel:09175584276" class="checkout-phone-btn">0917-558-4276</a>
+  </div>
+
+  <div class="checkout-wrap">
+
+    <h1 class="checkout-heading">Checkout</h1>
+
+    <!-- Empty state (hidden when cart has items) -->
+    <div id="checkout-empty" class="checkout-empty" style="display:none;">
+      <p>Your cart is empty</p>
+      <a href="index.html#menu">Browse the menu</a>
+    </div>
+
+    <!-- Checkout form (hidden when cart is empty) -->
+    <div id="checkout-form" style="display:none;">
+
+      <!-- Order Type -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Order Type</div>
+        <div class="checkout-toggle" id="order-type-toggle">
+          <button class="active" data-value="delivery" onclick="setOrderType('delivery')">Delivery</button>
+          <button data-value="pickup" onclick="setOrderType('pickup')">Pick-up</button>
+        </div>
+
+        <div class="checkout-delivery-fields show" id="delivery-fields">
+          <div class="checkout-field">
+            <label for="address">Delivery Address</label>
+            <input type="text" id="address" placeholder="Full address in Marilao or nearby area">
+          </div>
+          <div class="checkout-field">
+            <label for="landmark">Landmark <span class="optional-tag">(optional)</span></label>
+            <input type="text" id="landmark" placeholder="e.g., Near Marilao Municipal Hall">
+          </div>
+        </div>
+      </div>
+
+      <!-- Your Details -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Your Details</div>
+        <div class="checkout-field">
+          <label for="cust-name">Name <span class="optional-tag">(optional)</span></label>
+          <input type="text" id="cust-name" placeholder="Your name">
+        </div>
+        <div class="checkout-field">
+          <label for="cust-phone">Phone <span class="optional-tag">(optional)</span></label>
+          <input type="tel" id="cust-phone" placeholder="e.g., 0917-000-0000">
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Payment Method</div>
+        <div class="checkout-toggle" id="payment-toggle">
+          <button class="active" data-value="cod" onclick="setPayment('cod')">Cash on Delivery</button>
+          <button data-value="gcash" onclick="setPayment('gcash')">GCash</button>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="checkout-section">
+        <div class="checkout-section-title">Order Summary</div>
+        <div class="checkout-summary-items" id="checkout-items"></div>
+        <div class="checkout-summary-line">
+          <span>Subtotal</span>
+          <span id="checkout-subtotal"></span>
+        </div>
+        <div class="checkout-delivery-note" id="delivery-fee-note">Delivery fee to be confirmed via Messenger</div>
+        <div class="checkout-summary-line total">
+          <span>Total</span>
+          <span id="checkout-total"></span>
+        </div>
+      </div>
+
+      <!-- Confirm -->
+      <button class="checkout-confirm-btn" onclick="confirmOrder()">Confirm Order</button>
+
+      <p style="text-align:center; font-size:12px; color:var(--sage); margin-top:16px; line-height:1.6;">
+        Your order will be sent to Rosalie's via Facebook Messenger for confirmation.<br>
+        We'll confirm availability, delivery fee, and schedule.
+      </p>
+
+    </div><!-- /checkout-form -->
+
+  </div><!-- /checkout-wrap -->
+
+</div><!-- /checkout-page -->
+
+<script src="js/cart.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var orderType = 'delivery';
+  var paymentMethod = 'cod';
+
+  // --- Expose renderCheckoutSummary globally for cart.js updateCartUI ---
+  window.renderCheckoutSummary = renderCheckoutSummary;
+
+  function init() {
+    renderCheckoutSummary();
+  }
+
+  window.setOrderType = function(type) {
+    orderType = type;
+    var btns = document.querySelectorAll('#order-type-toggle button');
+    btns.forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-value') === type);
+    });
+    var fields = document.getElementById('delivery-fields');
+    var note = document.getElementById('delivery-fee-note');
+    if (type === 'delivery') {
+      fields.classList.add('show');
+      if (note) note.style.display = '';
+    } else {
+      fields.classList.remove('show');
+      if (note) note.style.display = 'none';
+    }
+  };
+
+  window.setPayment = function(method) {
+    paymentMethod = method;
+    var btns = document.querySelectorAll('#payment-toggle button');
+    btns.forEach(function(b) {
+      b.classList.toggle('active', b.getAttribute('data-value') === method);
+    });
+  };
+
+  function renderCheckoutSummary() {
+    var cart = RosaliesCart.getCart();
+    var emptyEl = document.getElementById('checkout-empty');
+    var formEl = document.getElementById('checkout-form');
+
+    if (!cart.length) {
+      if (emptyEl) emptyEl.style.display = '';
+      if (formEl) formEl.style.display = 'none';
+      return;
+    }
+
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (formEl) formEl.style.display = '';
+
+    var itemsHtml = '';
+    cart.forEach(function(item) {
+      itemsHtml +=
+        '<div class="checkout-summary-item">' +
+          '<span class="item-name">' + item.name + '</span>' +
+          '<span class="item-qty">x' + item.qty + '</span>' +
+          '<span class="item-total">₱' + (item.price * item.qty).toLocaleString() + '</span>' +
+        '</div>';
+    });
+
+    var itemsEl = document.getElementById('checkout-items');
+    if (itemsEl) itemsEl.innerHTML = itemsHtml;
+
+    var total = RosaliesCart.getCartTotal();
+    var subtotalEl = document.getElementById('checkout-subtotal');
+    var totalEl = document.getElementById('checkout-total');
+    if (subtotalEl) subtotalEl.textContent = '₱' + total.toLocaleString();
+    if (totalEl) totalEl.textContent = '₱' + total.toLocaleString();
+  }
+
+  window.confirmOrder = function() {
+    var cart = RosaliesCart.getCart();
+    if (!cart.length) {
+      alert('Your cart is empty. Please add items first.');
+      return;
+    }
+
+    // Gather form data
+    var address = document.getElementById('address') ? document.getElementById('address').value.trim() : '';
+    var landmark = document.getElementById('landmark') ? document.getElementById('landmark').value.trim() : '';
+    var name = document.getElementById('cust-name') ? document.getElementById('cust-name').value.trim() : '';
+    var phone = document.getElementById('cust-phone') ? document.getElementById('cust-phone').value.trim() : '';
+
+    if (orderType === 'delivery' && !address) {
+      alert('Please enter your delivery address.');
+      document.getElementById('address').focus();
+      return;
+    }
+
+    // Build messenger message
+    var lines = [];
+    lines.push('Hi! I\'d like to place an order:');
+    lines.push('');
+    cart.forEach(function(item) {
+      lines.push(item.name + ' x' + item.qty + ' - P' + (item.price * item.qty).toLocaleString());
+    });
+    lines.push('');
+    lines.push('Total: P' + RosaliesCart.getCartTotal().toLocaleString());
+    lines.push('');
+    lines.push('Order type: ' + (orderType === 'delivery' ? 'Delivery' : 'Pick-up'));
+    if (orderType === 'delivery') {
+      lines.push('Address: ' + address);
+      if (landmark) lines.push('Landmark: ' + landmark);
+    }
+    if (name) lines.push('Name: ' + name);
+    if (phone) lines.push('Phone: ' + phone);
+    lines.push('Payment: ' + (paymentMethod === 'cod' ? 'Cash on Delivery' : 'GCash'));
+
+    var msg = encodeURIComponent(lines.join('\n'));
+    var messengerUrl = 'https://m.me/rosalieskakanin?text=' + msg;
+
+    // Clear cart after sending
+    RosaliesCart.clearCart();
+
+    // Open messenger
+    window.open(messengerUrl, '_blank');
+
+    // Show confirmation
+    var formEl = document.getElementById('checkout-form');
+    if (formEl) {
+      formEl.innerHTML =
+        '<div class="checkout-empty">' +
+          '<p>Order sent!</p>' +
+          '<p class="cart-empty-sub" style="font-family:\'Jost\', sans-serif; font-style:normal; font-size:14px; color:var(--sage); margin-top:8px; line-height:1.6;">' +
+            'Your order has been sent to Rosalie\'s via Messenger.<br>They will confirm your order shortly.' +
+          '</p>' +
+          '<a href="index.html#menu" style="display:inline-block; margin-top:24px; color:var(--gold); font-size:14px; text-decoration:underline;">Back to menu</a>' +
+        '</div>';
+    }
+  };
+
+  // Init
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
