@@ -101,29 +101,18 @@
         <p id="payment-note" style="font-size:12px; color:var(--sage); margin-top:8px; font-style:italic;">Cash on delivery isn't available over 15 km — GCash is required.</p>
       </div>
 
-      <!-- Receipt-style Order Summary -->
+      <!-- Order Summary -->
       <div class="checkout-section">
-        <div class="receipt">
-          <div class="receipt-header">
-            <span>— ROSALIE'S KAKANIN —</span>
-          </div>
-          <div class="receipt-items" id="checkout-items"></div>
-          <div class="receipt-divider"></div>
-          <div class="receipt-line">
-            <span>Subtotal</span>
-            <span id="checkout-subtotal"></span>
-          </div>
-          <div class="receipt-line">
-            <span>Delivery</span>
-            <span id="delivery-fee-text">confirmed on Messenger</span>
-          </div>
-          <div class="receipt-line receipt-total">
-            <span>TOTAL so far</span>
-            <span id="checkout-total"></span>
-          </div>
-          <div class="receipt-footer" id="delivery-fee-note">
-            Delivery fee will be added when we confirm your location.
-          </div>
+        <div class="checkout-section-title">Order Summary</div>
+        <div class="checkout-summary-items" id="checkout-items"></div>
+        <div class="checkout-summary-line">
+          <span>Subtotal</span>
+          <span id="checkout-subtotal"></span>
+        </div>
+        <div class="checkout-delivery-note" id="delivery-fee-note">Delivery fee to be confirmed via Messenger</div>
+        <div class="checkout-summary-line total">
+          <span>Total</span>
+          <span id="checkout-total"></span>
         </div>
       </div>
 
@@ -315,10 +304,10 @@ document.getElementById('address-search')?.addEventListener('keypress', function
     var itemsHtml = '';
     cart.forEach(function(item) {
       itemsHtml +=
-        '<div class="receipt-item">' +
-          '<span class="receipt-item-qty">' + item.qty + '×</span>' +
-          '<span class="receipt-item-name">' + item.name + '</span>' +
-          '<span class="receipt-item-price">₱' + (item.price * item.qty).toLocaleString() + '.00</span>' +
+        '<div class="checkout-summary-item">' +
+          '<span class="item-name">' + item.name + '</span>' +
+          '<span class="item-qty">x' + item.qty + '</span>' +
+          '<span class="item-total">₱' + (item.price * item.qty).toLocaleString() + '</span>' +
         '</div>';
     });
 
@@ -328,8 +317,8 @@ document.getElementById('address-search')?.addEventListener('keypress', function
     var total = RosaliesCart.getCartTotal();
     var subtotalEl = document.getElementById('checkout-subtotal');
     var totalEl = document.getElementById('checkout-total');
-    if (subtotalEl) subtotalEl.textContent = '₱' + total.toLocaleString() + '.00';
-    if (totalEl) totalEl.textContent = '₱' + total.toLocaleString() + '.00';
+    if (subtotalEl) subtotalEl.textContent = '₱' + total.toLocaleString();
+    if (totalEl) totalEl.textContent = '₱' + total.toLocaleString();
   }
 
   window.confirmOrder = function() {
