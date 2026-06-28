@@ -935,6 +935,7 @@ footer .word {
 /* ============================================
    RESPONSIVE
    ============================================ */
+/* Policy grid responsive */
 @media (max-width: 880px) {
   nav.links { display: none; }
   .social-nav { display: none; }
@@ -947,6 +948,7 @@ footer .word {
   section { padding: 70px 0; }
   .about-art { max-height: 350px; }
   .social-links-section { flex-direction: column; }
+  #policy .reveal[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
 }
 
 @media (max-width: 520px) {
