@@ -93,25 +93,37 @@
 
       <!-- Payment Method -->
       <div class="checkout-section">
-        <div class="checkout-section-title">Payment Method</div>
+        <div class="checkout-section-title">How will you pay?</div>
         <div class="checkout-toggle" id="payment-toggle">
-          <button class="active" data-value="cod" onclick="setPayment('cod')">Cash on Delivery</button>
-          <button data-value="gcash" onclick="setPayment('gcash')">GCash</button>
+          <button data-value="cod" onclick="setPayment('cod')" id="cod-btn">Cash on Delivery</button>
+          <button class="active" data-value="gcash" onclick="setPayment('gcash')" id="gcash-btn">GCash</button>
         </div>
+        <p id="payment-note" style="font-size:12px; color:var(--sage); margin-top:8px; font-style:italic;">Cash on delivery isn't available over 15 km — GCash is required.</p>
       </div>
 
-      <!-- Order Summary -->
+      <!-- Receipt-style Order Summary -->
       <div class="checkout-section">
-        <div class="checkout-section-title">Order Summary</div>
-        <div class="checkout-summary-items" id="checkout-items"></div>
-        <div class="checkout-summary-line">
-          <span>Subtotal</span>
-          <span id="checkout-subtotal"></span>
-        </div>
-        <div class="checkout-delivery-note" id="delivery-fee-note">Delivery fee to be confirmed via Messenger</div>
-        <div class="checkout-summary-line total">
-          <span>Total</span>
-          <span id="checkout-total"></span>
+        <div class="receipt">
+          <div class="receipt-header">
+            <span>— ROSALIE'S KAKANIN —</span>
+          </div>
+          <div class="receipt-items" id="checkout-items"></div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-line">
+            <span>Subtotal</span>
+            <span id="checkout-subtotal"></span>
+          </div>
+          <div class="receipt-line">
+            <span>Delivery</span>
+            <span id="delivery-fee-text">confirmed on Messenger</span>
+          </div>
+          <div class="receipt-line receipt-total">
+            <span>TOTAL so far</span>
+            <span id="checkout-total"></span>
+          </div>
+          <div class="receipt-footer" id="delivery-fee-note">
+            Delivery fee will be added when we confirm your location.
+          </div>
         </div>
       </div>
 
@@ -240,13 +252,15 @@ document.getElementById('address-search')?.addEventListener('keypress', function
   'use strict';
 
   var orderType = 'delivery';
-  var paymentMethod = 'cod';
+  var paymentMethod = 'gcash';
 
   // --- Expose renderCheckoutSummary globally for cart.js updateCartUI ---
   window.renderCheckoutSummary = renderCheckoutSummary;
 
   function init() {
     renderCheckoutSummary();
+    var codBtn = document.getElementById('cod-btn');
+    if (codBtn) { codBtn.disabled = true; codBtn.style.opacity = '0.4'; codBtn.style.cursor = 'not-allowed'; }
   }
 
   window.setOrderType = function(type) {
@@ -257,12 +271,22 @@ document.getElementById('address-search')?.addEventListener('keypress', function
     });
     var fields = document.getElementById('delivery-fields');
     var note = document.getElementById('delivery-fee-note');
+    var feeText = document.getElementById('delivery-fee-text');
+    var codBtn = document.getElementById('cod-btn');
+    var payNote = document.getElementById('payment-note');
     if (type === 'delivery') {
       fields.classList.add('show');
       if (note) note.style.display = '';
+      if (feeText) feeText.textContent = 'confirmed on Messenger';
+      if (codBtn) { codBtn.disabled = true; codBtn.style.opacity = '0.4'; codBtn.style.cursor = 'not-allowed'; }
+      if (payNote) { payNote.style.display = ''; payNote.textContent = 'Cash on delivery isn\'t available for delivery — GCash is required.'; }
+      setPayment('gcash');
     } else {
       fields.classList.remove('show');
       if (note) note.style.display = 'none';
+      if (feeText) feeText.textContent = '—';
+      if (codBtn) { codBtn.disabled = false; codBtn.style.opacity = '1'; codBtn.style.cursor = 'pointer'; }
+      if (payNote) payNote.style.display = 'none';
     }
   };
 
@@ -291,10 +315,10 @@ document.getElementById('address-search')?.addEventListener('keypress', function
     var itemsHtml = '';
     cart.forEach(function(item) {
       itemsHtml +=
-        '<div class="checkout-summary-item">' +
-          '<span class="item-name">' + item.name + '</span>' +
-          '<span class="item-qty">x' + item.qty + '</span>' +
-          '<span class="item-total">₱' + (item.price * item.qty).toLocaleString() + '</span>' +
+        '<div class="receipt-item">' +
+          '<span class="receipt-item-qty">' + item.qty + '×</span>' +
+          '<span class="receipt-item-name">' + item.name + '</span>' +
+          '<span class="receipt-item-price">₱' + (item.price * item.qty).toLocaleString() + '.00</span>' +
         '</div>';
     });
 
@@ -304,8 +328,8 @@ document.getElementById('address-search')?.addEventListener('keypress', function
     var total = RosaliesCart.getCartTotal();
     var subtotalEl = document.getElementById('checkout-subtotal');
     var totalEl = document.getElementById('checkout-total');
-    if (subtotalEl) subtotalEl.textContent = '₱' + total.toLocaleString();
-    if (totalEl) totalEl.textContent = '₱' + total.toLocaleString();
+    if (subtotalEl) subtotalEl.textContent = '₱' + total.toLocaleString() + '.00';
+    if (totalEl) totalEl.textContent = '₱' + total.toLocaleString() + '.00';
   }
 
   window.confirmOrder = function() {
